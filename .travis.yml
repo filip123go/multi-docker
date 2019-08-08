@@ -9,14 +9,26 @@ script:
   - docker run filip123go/react-test npm test
 
 after-success:
-  - docker build -t filip123go/multi-client ./client
-  - docker build -t filip123go/multi-ngiinx ./nginx
-  - docker build -t filip123go/multi-server ./server
-  - docker build -t filip123go/multi-worker ./worker
-  #Log in to the docker CLI
+after_success:
+
+  - docker build -t "$DOCKER_ID"/complex-client ./client
+
+  - docker build -t "$DOCKER_ID"/complex-nginx -f ./nginx/Dockerfile.dev ./nginx
+
+  - docker build -t "$DOCKER_ID"/complex-server ./server
+
+  - docker build -t "$DOCKER_ID"/complex-worker ./worker
+
+  # Login into docker hub
+
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-  #Take those images and push them to docker hub
-  - docker push filip123go/multi-client
-  - docker push filip123go/multi-ngiinx
-  - docker push filip123go/multi-server
-  - docker push filip123go/multi-worker
+
+  # push images to docker hub
+
+  - docker push "$DOCKER_ID"/complex-client
+
+  - docker push "$DOCKER_ID"/complex-nginx
+
+  - docker push "$DOCKER_ID"/complex-server
+
+  - docker push "$DOCKER_ID"/complex-worker
